@@ -22,4 +22,9 @@ public class HutController {
     public List<HutServiceModel> getHutsForMountain(@PathVariable String mountainId) {
         return hutService.getHutsForMountain(mountainId);
     }
+
+    @GetMapping("/huts/{hutId}")
+    public HutServiceModel getHutById(@PathVariable String hutId) {
+        return hutService.getHutById(hutId);
+    }
 }

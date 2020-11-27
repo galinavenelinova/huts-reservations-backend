@@ -3,10 +3,7 @@ package com.example.demo.web.controllers;
 import com.example.demo.service.models.MountainServiceModel;
 import com.example.demo.service.services.MountainService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +20,7 @@ public class MountainController {
 
     @GetMapping("")
     public List<MountainServiceModel> getAllMountains() {
+        System.out.println("get request received");
         return mountainService.getAll();
     }
 }

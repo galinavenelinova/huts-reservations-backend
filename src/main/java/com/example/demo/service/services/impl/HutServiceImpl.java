@@ -35,4 +35,11 @@ public class HutServiceImpl implements HutService {
         return hutRepository.findAllByMountainId(mountainId).stream().map(m -> mapper.map(m, HutServiceModel.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public HutServiceModel getHutById(String hutId) {
+        return hutRepository.findById(hutId).map(
+                m -> mapper.map(m, HutServiceModel.class)
+        ).orElse(null);
+    }
 }

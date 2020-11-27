@@ -9,4 +9,6 @@ public interface HutService {
     List<HutServiceModel> getAll();
 
     List<HutServiceModel> getHutsForMountain(String mountainId);
+
+    HutServiceModel getHutById(String hutId);
 }
