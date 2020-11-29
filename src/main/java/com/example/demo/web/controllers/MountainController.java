@@ -23,4 +23,9 @@ public class MountainController {
         System.out.println("get request received");
         return mountainService.getAll();
     }
+
+    @PostMapping("/test")
+    public void checkPost() {
+        System.out.println("input post request");
+    }
 }
