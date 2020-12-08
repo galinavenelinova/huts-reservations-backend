@@ -14,21 +14,24 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class User extends BaseEntity {
-    @Column
-    private String firstName;
+    @Column(nullable = false)
+    private String username;
 
-    @Column
-    private String lastName;
+    @Column(nullable = false)
+    private String password;
 
-    @Column
-    private String phone;
+    @Column(nullable = false)
+    private String tel;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column
-    private String password;
+    @Column(nullable = false)
+    private String names;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Reservation> reservations;
+
+    @OneToMany
+    private List<Role> authorities;
 }
