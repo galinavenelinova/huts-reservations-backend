@@ -16,5 +16,5 @@ public class UserServiceModel {
     private String password;
     private String tel;
     private String names;
-    private List<RoleServiceModel> authorities;
+    private List<Role> authorities;
 }

@@ -1,44 +1,50 @@
 package com.example.demo.service.services.impl;
 
+import com.example.demo.data.models.Role;
 import com.example.demo.data.models.User;
+import com.example.demo.data.repositories.RoleRepository;
 import com.example.demo.data.repositories.UserRepository;
-import com.example.demo.service.models.UserServiceModel;
 import com.example.demo.service.services.UserService;
 import com.example.demo.web.models.UserDetailsOutputModel;
 import com.example.demo.web.models.UserInputModel;
 import com.example.demo.web.models.UserOutputModel;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public UserDetailsOutputModel loadUserByEmail(String email) {
-        UserServiceModel userServiceModel = this.userRepository.findByEmail(email)
-                .map(m -> modelMapper.map(m, UserServiceModel.class)).orElse(null);
-        return this.modelMapper.map(userServiceModel, UserDetailsOutputModel.class);
-    }
-
-    @Override
-    public UserServiceModel loadUserByUsername(String username) {
-        return this.userRepository.findByUsername(username).map(u -> this.modelMapper.map(u, UserServiceModel.class)).orElse(null);
+    public UserDetails loadUserByUsername(String username) {
+        return this.userRepository.findByUsername(username).orElse(null);
     }
 
     @Override
     public UserOutputModel register(UserInputModel userModel) {
         userModel.setPassword(passwordEncoder.encode(userModel.getPassword()));
-        User user = this.userRepository.save(modelMapper.map(userModel, User.class));
+        User userInput = modelMapper.map(userModel, User.class);
+        Role role = new Role();
+        role.setAuthority();
+        userInput.setAuthorities(Arrays.asList(role));
+        this.roleRepository.save(role);
+        User user = this.userRepository.save(userInput);
         return this.modelMapper.map(user, UserOutputModel.class);
     }
 
@@ -50,5 +56,11 @@ public class UserServiceImpl implements UserService {
         }else {
             return this.modelMapper.map(user, UserOutputModel.class);
         }
+    }
+
+    @Override
+    public UserDetailsOutputModel getUserDetails(String email) {
+        User user = this.userRepository.findByEmail(email).orElse(null);
+        return this.modelMapper.map(user, UserDetailsOutputModel.class);
     }
 }

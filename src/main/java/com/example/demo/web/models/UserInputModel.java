@@ -1,8 +1,11 @@
 package com.example.demo.web.models;
 
+import com.example.demo.data.models.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,4 +16,5 @@ public class UserInputModel {
     private String tel;
     private String names;
     private String password;
+    private List<Role> authorities;
 }

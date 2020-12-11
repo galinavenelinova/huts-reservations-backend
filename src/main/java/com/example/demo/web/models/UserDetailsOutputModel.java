@@ -10,7 +10,6 @@ import lombok.Setter;
 public class UserDetailsOutputModel {
     private String username;
     private String email;
-    private String password;
     private String tel;
     private String names;
 }

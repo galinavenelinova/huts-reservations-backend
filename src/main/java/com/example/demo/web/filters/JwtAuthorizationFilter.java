@@ -1,12 +1,10 @@
 package com.example.demo.web.filters;
 
-import com.example.demo.service.models.UserServiceModel;
 import com.example.demo.service.services.UserService;
 import io.jsonwebtoken.Jwts;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -16,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
 
 @Order(1)
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
@@ -55,15 +52,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     .getSubject();
 
             if (username != null) {
-//                UserDetails userData = this.userService
-//                        .loadUserByUsername(username);
-
-                UserServiceModel userModel = this.userService.loadUserByUsername(username);
+                UserDetails userData = this.userService
+                        .loadUserByUsername(username);
 
                 usernamePasswordAuthenticationToken
                         = new UsernamePasswordAuthenticationToken(
                         username,
-                        null
+                        null,
+                        userData.getAuthorities()
                 );
             }
         }
