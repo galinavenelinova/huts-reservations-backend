@@ -1,34 +1,19 @@
 package com.example.demo.web.controllers;
 
-import com.example.demo.data.models.User;
 import com.example.demo.service.services.UserService;
-import com.example.demo.web.models.UserDetailsOutputModel;
+import com.example.demo.web.models.UserDetailsModel;
 import com.example.demo.web.models.UserInputModel;
 import com.example.demo.web.models.UserOutputModel;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
 
 @RestController
 //@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -43,18 +28,12 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<UserOutputModel> register(@RequestBody UserInputModel userModel, HttpServletResponse response) {
-        System.out.println("register: " + userModel.getEmail());
         UserOutputModel userOutputModel = this.userService.register(userModel);
         if (userOutputModel == null) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         } else {
-            String token = Jwts.builder()
-                    .setSubject(userOutputModel.getUsername())
-                    .setExpiration(new Date(System.currentTimeMillis() + 1200000000))
-                    .signWith(SignatureAlgorithm.HS256, "Secret".getBytes())
-                    .compact();
             HttpHeaders responseHeaders = new HttpHeaders();
-            Cookie cookie = new Cookie("auth-cookie", token);
+            Cookie cookie = new Cookie("id", userOutputModel.getId());
             response.addCookie(cookie);
             return new ResponseEntity<>(userOutputModel, responseHeaders, HttpStatus.OK);
         }
@@ -72,7 +51,7 @@ public class UserController {
 //                    .signWith(SignatureAlgorithm.HS256, "Secret".getBytes())
 //                    .compact();
             HttpHeaders responseHeaders = new HttpHeaders();
-            Cookie cookie = new Cookie("email", userOutputModel.getEmail());
+            Cookie cookie = new Cookie("id", userOutputModel.getId());
             response.addCookie(cookie);
 
             return new ResponseEntity<>(userOutputModel, responseHeaders, HttpStatus.OK);
@@ -80,13 +59,23 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<UserOutputModel> logout(@RequestBody UserInputModel userModel, HttpServletResponse response) {
+    public ResponseEntity<UserOutputModel> logout() {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<UserDetailsOutputModel> getUserDetails(@CookieValue(name="email") String email, HttpServletRequest request) {
-        UserDetailsOutputModel userDetailsOutputModel = this.userService.getUserDetails(email);
+    public ResponseEntity<UserDetailsModel> getUserDetails(@CookieValue(name="id") String userId) {
+        UserDetailsModel userDetailsOutputModel = this.userService.getUserDetails(userId);
+//        UserDetailsOutputModel userDetailsOutputModel = this.userService.loadUserByEmail(userInputModel.getEmail());
+        return new ResponseEntity<>(userDetailsOutputModel, HttpStatus.OK);
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<UserDetailsModel> updateUserDetails(@CookieValue(name="id") String userId, @RequestBody UserInputModel userModel) {
+        System.out.println("Cookie userId: " + userId);
+        System.out.println("userModelEmail: " + userModel.getEmail());
+        UserDetailsModel userDetailsOutputModel = this.userService.updateUserDetails(userId, userModel);
+//        UserDetailsOutputModel userDetailsOutputModel = this.userService.getUserDetails(userModel.getId());
 //        UserDetailsOutputModel userDetailsOutputModel = this.userService.loadUserByEmail(userInputModel.getEmail());
         return new ResponseEntity<>(userDetailsOutputModel, HttpStatus.OK);
     }

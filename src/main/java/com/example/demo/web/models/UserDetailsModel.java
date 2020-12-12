@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserDetailsOutputModel {
+public class UserDetailsModel {
+    private String id;
     private String username;
     private String email;
     private String tel;

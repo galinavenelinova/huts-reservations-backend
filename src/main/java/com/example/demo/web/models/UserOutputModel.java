@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UserOutputModel {
+    private String id;
     private String username;
     private String email;
 }

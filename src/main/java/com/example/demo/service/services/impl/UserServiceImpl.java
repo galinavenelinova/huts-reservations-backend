@@ -5,7 +5,7 @@ import com.example.demo.data.models.User;
 import com.example.demo.data.repositories.RoleRepository;
 import com.example.demo.data.repositories.UserRepository;
 import com.example.demo.service.services.UserService;
-import com.example.demo.web.models.UserDetailsOutputModel;
+import com.example.demo.web.models.UserDetailsModel;
 import com.example.demo.web.models.UserInputModel;
 import com.example.demo.web.models.UserOutputModel;
 import org.modelmapper.ModelMapper;
@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 
@@ -59,8 +58,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetailsOutputModel getUserDetails(String email) {
-        User user = this.userRepository.findByEmail(email).orElse(null);
-        return this.modelMapper.map(user, UserDetailsOutputModel.class);
+    public UserDetailsModel getUserDetails(String userId) {
+        User user = this.userRepository.findById(userId).orElse(null);
+        return this.modelMapper.map(user, UserDetailsModel.class);
+    }
+
+    @Override
+    public UserDetailsModel updateUserDetails(String userId, UserInputModel userModel) {
+        User user = this.userRepository.findById(userId).orElse(null);
+        assert user != null;
+        user.setUsername(userModel.getUsername());
+        user.setEmail(userModel.getEmail());
+        user.setNames(userModel.getNames());
+        user.setTel(userModel.getTel());
+        User userOutput = this.userRepository.save(user);
+        return this.modelMapper.map(userOutput, UserDetailsModel.class);
     }
 }
