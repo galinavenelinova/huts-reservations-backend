@@ -37,7 +37,7 @@ public class ApplicationSecurityConfiguration extends WebSecurityConfigurerAdapt
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/api/mountains", "/**/huts/**", "/api/users/**").permitAll()
+                .antMatchers("/api/mountains", "/api/huts/**", "/api/**/huts", "/api/users/**", "/api/reservation/**").permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(), this.userService))

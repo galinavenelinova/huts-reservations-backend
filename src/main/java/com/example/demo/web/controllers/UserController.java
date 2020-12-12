@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
-@RequestMapping(value = "/api/users", consumes = "application/json")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@RequestMapping(value = "/api", consumes = "application/json")
 public class UserController {
     private UserService userService;
 
@@ -26,7 +26,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
+    @PostMapping("/users/register")
     public ResponseEntity<UserOutputModel> register(@RequestBody UserInputModel userModel, HttpServletResponse response) {
         UserOutputModel userOutputModel = this.userService.register(userModel);
         if (userOutputModel == null) {
@@ -39,7 +39,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/login")
+    @PostMapping("/users/login")
     public ResponseEntity<UserOutputModel> login(@RequestBody UserInputModel userModel, HttpServletResponse response) throws IOException, ServletException {
         UserOutputModel userOutputModel = this.userService.login(userModel);
         if (userOutputModel == null) {
@@ -58,19 +58,18 @@ public class UserController {
         }
     }
 
-    @PostMapping("/logout")
+    @PostMapping("/users/logout")
     public ResponseEntity<UserOutputModel> logout() {
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
-    @GetMapping("/profile")
+    @GetMapping("/users/profile")
     public ResponseEntity<UserDetailsModel> getUserDetails(@CookieValue(name="id") String userId) {
         UserDetailsModel userDetailsOutputModel = this.userService.getUserDetails(userId);
-//        UserDetailsOutputModel userDetailsOutputModel = this.userService.loadUserByEmail(userInputModel.getEmail());
         return new ResponseEntity<>(userDetailsOutputModel, HttpStatus.OK);
     }
 
-    @PostMapping("/profile")
+    @PostMapping("/users/profile")
     public ResponseEntity<UserDetailsModel> updateUserDetails(@CookieValue(name="id") String userId, @RequestBody UserInputModel userModel) {
         System.out.println("Cookie userId: " + userId);
         System.out.println("userModelEmail: " + userModel.getEmail());
