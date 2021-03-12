@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,5 +17,5 @@ public class UserServiceModel {
     private String password;
     private String tel;
     private String names;
-    private List<Role> authorities;
+    private Set<RoleServiceModel> authorities;
 }

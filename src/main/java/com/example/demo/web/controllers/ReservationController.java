@@ -1,14 +1,9 @@
 package com.example.demo.web.controllers;
 
 import com.example.demo.service.services.ReservationService;
-import com.example.demo.web.models.ReservationCheckModel;
 import com.example.demo.web.models.ReservationListModel;
 import com.example.demo.web.models.ReservationModel;
-import com.example.demo.web.models.UserDetailsModel;
-import com.google.gson.Gson;
-import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Principal;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
@@ -29,48 +30,43 @@ public class UserController {
     @PostMapping("/users/register")
     public ResponseEntity<UserOutputModel> register(@RequestBody UserInputModel userModel, HttpServletResponse response) {
         UserOutputModel userOutputModel = this.userService.register(userModel);
-        if (userOutputModel == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        } else {
-            HttpHeaders responseHeaders = new HttpHeaders();
-            Cookie cookie = new Cookie("id", userOutputModel.getId());
-            response.addCookie(cookie);
-            return new ResponseEntity<>(userOutputModel, responseHeaders, HttpStatus.OK);
-        }
+
+        return new ResponseEntity<>(userOutputModel, HttpStatus.OK);
     }
 
-    @PostMapping("/users/login")
-    public ResponseEntity<UserOutputModel> login(@RequestBody UserInputModel userModel, HttpServletResponse response) throws IOException, ServletException {
-        UserOutputModel userOutputModel = this.userService.login(userModel);
-        if (userOutputModel == null) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        } else {
-//            String token = Jwts.builder()
-//                    .setSubject(userOutputModel.getUsername())
-//                    .setExpiration(new Date(System.currentTimeMillis() + 1200000000))
-//                    .signWith(SignatureAlgorithm.HS256, "Secret".getBytes())
-//                    .compact();
-            HttpHeaders responseHeaders = new HttpHeaders();
-            Cookie cookie = new Cookie("id", userOutputModel.getId());
-            response.addCookie(cookie);
+//    @PostMapping("/users/login")
+//    public ResponseEntity<UserOutputModel> login(@RequestBody UserInputModel userModel, HttpServletResponse response) throws IOException, ServletException {
+//        UserOutputModel userOutputModel = this.userService.login(userModel);
+//        if (userOutputModel == null) {
+//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//        } else {
+////            String token = Jwts.builder()
+////                    .setSubject(userOutputModel.getUsername())
+////                    .setExpiration(new Date(System.currentTimeMillis() + 1200000000))
+////                    .signWith(SignatureAlgorithm.HS256, "Secret".getBytes())
+////                    .compact();
+////            HttpHeaders responseHeaders = new HttpHeaders();
+////            Cookie cookie = new Cookie("id", userOutputModel.getId());
+////            response.addCookie(cookie);
+//
+//            return new ResponseEntity<>(userOutputModel, HttpStatus.OK);
+//        }
+//    }
 
-            return new ResponseEntity<>(userOutputModel, responseHeaders, HttpStatus.OK);
-        }
-    }
-
-    @PostMapping("/users/logout")
-    public ResponseEntity<UserOutputModel> logout() {
-        return new ResponseEntity<>(null, HttpStatus.OK);
-    }
+//    @PostMapping("/users/logout")
+//    public ResponseEntity<UserOutputModel> logout() {
+//        return new ResponseEntity<>(null, HttpStatus.OK);
+//    }
 
     @GetMapping("/users/profile")
-    public ResponseEntity<UserDetailsModel> getUserDetails(@CookieValue(name="id") String userId) {
-        UserDetailsModel userDetailsOutputModel = this.userService.getUserDetails(userId);
+    public ResponseEntity<UserDetailsModel> getUserDetails(Principal principal) {
+        String username = principal.getName();
+        UserDetailsModel userDetailsOutputModel = this.userService.getUserDetails(username);
         return new ResponseEntity<>(userDetailsOutputModel, HttpStatus.OK);
     }
 
     @PostMapping("/users/profile")
-    public ResponseEntity<UserDetailsModel> updateUserDetails(@CookieValue(name="id") String userId, @RequestBody UserInputModel userModel) {
+    public ResponseEntity<UserDetailsModel> updateUserDetails(@CookieValue(name = "id") String userId, @RequestBody UserInputModel userModel) {
         System.out.println("Cookie userId: " + userId);
         System.out.println("userModelEmail: " + userModel.getEmail());
         UserDetailsModel userDetailsOutputModel = this.userService.updateUserDetails(userId, userModel);

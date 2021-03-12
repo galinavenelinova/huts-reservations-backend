@@ -14,16 +14,20 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "roles")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Role extends BaseEntity implements GrantedAuthority {
-    @Column
     private String authority;
 
-    @ManyToOne
-    private User user;
+    public Role(String authority) {
+        this.authority = authority;
+    }
 
-    public void setAuthority() {
-        this.authority = "ROLE_USER";
+    @Override
+    public String getAuthority() {
+        return authority;
+    }
+
+    public void setAuthority(String authority) {
+        this.authority = authority;
     }
 }

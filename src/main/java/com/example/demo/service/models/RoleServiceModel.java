@@ -8,4 +8,5 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RoleServiceModel {
+    private String authority;
 }
