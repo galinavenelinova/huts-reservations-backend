@@ -13,4 +13,5 @@ public class UserDetailsModel {
     private String email;
     private String tel;
     private String names;
+    private String role;
 }

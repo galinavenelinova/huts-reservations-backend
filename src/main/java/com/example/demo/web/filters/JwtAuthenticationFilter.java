@@ -61,7 +61,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String username = ((UserDetails) authResult.getPrincipal()).getUsername();
-        System.out.println("username: " + username);
         UserDetails userDetails = userService.loadUserByUsername(username);
         User user = new User();
         user.setUsername(userDetails.getUsername());
@@ -80,7 +79,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .signWith(SignatureAlgorithm.HS256, "Secret".getBytes())
                 .compact();
 
-        String json = new Gson().toJson(user);
+        UserOutputModel userOutputModel = new UserOutputModel();
+        userOutputModel.setUsername(user.getUsername());
+        userOutputModel.setRole(authority);
+        String json = new Gson().toJson(userOutputModel);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json);
