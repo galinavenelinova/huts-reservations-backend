@@ -25,12 +25,6 @@ public class HutServiceImpl implements HutService {
     }
 
     @Override
-    public List<HutServiceModel> getAll() {
-        return hutRepository.findAll().stream().map(m -> mapper.map(m, HutServiceModel.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<HutServiceModel> getHutsForMountain(String mountainId) {
         return hutRepository.findAllByMountainId(mountainId).stream().map(m -> mapper.map(m, HutServiceModel.class))
                 .collect(Collectors.toList());

@@ -4,9 +4,7 @@ import com.example.demo.data.models.base.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
+import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import java.util.*;
 
@@ -16,10 +14,12 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 public class User extends BaseEntity {
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
+    @Length(min = 5)
     private String username;
 
     @Column(nullable = false)
+    @Length(min = 5)
     private String password;
 
     @Column(nullable = false)
@@ -46,5 +46,5 @@ public class User extends BaseEntity {
                     referencedColumnName = "id"
             )
     )
-    private Set<Role> authorities;
+    private List<Role> authorities;
 }

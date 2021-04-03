@@ -1,8 +1,8 @@
 package com.example.demo.service.services.impl;
 
+import com.example.demo.config.exceptions.InvalidUserException;
 import com.example.demo.data.models.Role;
 import com.example.demo.data.models.User;
-import com.example.demo.data.repositories.RoleRepository;
 import com.example.demo.data.repositories.UserRepository;
 import com.example.demo.service.services.RoleService;
 import com.example.demo.service.services.UserService;
@@ -10,62 +10,71 @@ import com.example.demo.web.models.UserDetailsModel;
 import com.example.demo.web.models.UserInputModel;
 import com.example.demo.web.models.UserOutputModel;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final RoleService roleService;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, BCryptPasswordEncoder bCryptPasswordEncoder, RoleService roleService) {
+
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
         this.modelMapper = modelMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.roleService = roleService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username).orElse(null);
 
-        Set<Role> authorities = user.getAuthorities();
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                authorities
-        );
+        if (user != null) {
+            List<Role> authorities = user.getAuthorities();
+            return new org.springframework.security.core.userdetails.User(
+                    user.getUsername(),
+                    user.getPassword(),
+                    authorities
+            );
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public UserOutputModel register(UserInputModel userServiceModel) {
+    public UserOutputModel register(UserInputModel userServiceModel) throws InvalidUserException {
         this.roleService.seedRolesInDB();
 
         User user = this.modelMapper.map(userServiceModel, User.class);
         if (this.userRepository.count() == 0) {
-            user.setAuthorities(new LinkedHashSet<>(this.roleRepository.findAll()));
+            user.setAuthorities(new ArrayList<>(this.roleService.findAllRoles()));
         } else {
-            LinkedHashSet<Role> roles = new LinkedHashSet<>();
-            roles.add(this.roleRepository.findByAuthority("USER"));
+            List<Role> roles = new ArrayList<>();
+            roles.add(this.roleService.finByAuthority("USER"));
             user.setAuthorities(roles);
         }
 
-        user.setPassword(this.bCryptPasswordEncoder.encode(userServiceModel.getPassword()));
-        this.userRepository.saveAndFlush(user);
+        if (userServiceModel.getPassword() != null && userServiceModel.getUsername() != null &&
+                userServiceModel.getEmail() != null && userServiceModel.getNames() != null &&
+                userServiceModel.getTel() != null) {
+            if (userServiceModel.getPassword().length() >= 5 && userServiceModel.getUsername().length() >= 5) {
+                user.setPassword(this.bCryptPasswordEncoder.encode(userServiceModel.getPassword()));
+                user = this.userRepository.saveAndFlush(user);
+            } else {
+                throw new InvalidUserException("Invalid length of password or username!");
+            }
+        } else {
+            throw new InvalidUserException("One or more not nullable field(s) of User is null (password, username, email, names, tel)!");
+        }
+
         return this.modelMapper.map(user, UserOutputModel.class);
     }
 
@@ -93,7 +102,7 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(u -> new UserOutputModel(
                         u.getUsername(),
-                        u.getAuthorities().stream().findFirst().orElse(null).getAuthority()))
+                        u.getAuthorities().get(u.getAuthorities().size() - 1).getAuthority()))
                 .collect(Collectors.toList());
 
     }

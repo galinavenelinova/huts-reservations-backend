@@ -7,7 +7,9 @@ import com.example.demo.service.services.RoleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -29,12 +31,12 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleServiceModel finByAuthority(String role) {
-        return this.modelMapper.map(this.roleRepository.findByAuthority(role), RoleServiceModel.class);
+    public Role finByAuthority(String role) {
+        return this.roleRepository.findByAuthority(role);
     }
 
     @Override
-    public Set<RoleServiceModel> findAllRoles() {
-        return new HashSet<>();
+    public List<Role> findAllRoles() {
+        return this.roleRepository.findAll();
     }
 }

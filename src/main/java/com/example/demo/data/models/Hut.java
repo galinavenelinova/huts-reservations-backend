@@ -1,6 +1,7 @@
 package com.example.demo.data.models;
 
 import com.example.demo.data.models.base.BaseEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Hut extends BaseEntity {
     @Column
     private String name;
@@ -22,6 +24,9 @@ public class Hut extends BaseEntity {
 
     @Column
     private String longInfo;
+
+    @Column
+    private Integer bedCapacity;
 
     @ManyToOne
     private Mountain mountain;

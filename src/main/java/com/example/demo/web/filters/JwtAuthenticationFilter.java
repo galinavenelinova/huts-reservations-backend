@@ -28,7 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Order(0)
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -64,12 +66,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         UserDetails userDetails = userService.loadUserByUsername(username);
         User user = new User();
         user.setUsername(userDetails.getUsername());
-        user.setAuthorities((Set<Role>) userDetails.getAuthorities());
-        String authority = user.getAuthorities()
-                .stream()
-                .findFirst()
-                .orElse(null)
-                .getAuthority();
+        List<Role> roles = userDetails.getAuthorities().stream().map(a -> (Role)a).collect(Collectors.toList());
+        user.setAuthorities(roles);
+        String authority = user.getAuthorities().get(0).getAuthority();
 
         String token = Jwts.builder()
                 .setSubject(username)
