@@ -12,8 +12,8 @@ import lombok.Setter;
 public class UserInputModel {
     private String id;
     private String username;
-    private String email;
-    private String tel;
-    private String names;
     private String password;
+    private String tel;
+    private String email;
+    private String names;
 }

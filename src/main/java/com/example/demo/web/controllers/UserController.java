@@ -1,6 +1,8 @@
 package com.example.demo.web.controllers;
 
 import com.example.demo.config.exceptions.InvalidUserException;
+import com.example.demo.data.models.Role;
+import com.example.demo.data.models.User;
 import com.example.demo.service.services.UserService;
 import com.example.demo.web.models.UserDetailsModel;
 import com.example.demo.web.models.UserInputModel;
@@ -53,4 +55,6 @@ public class UserController {
         List<UserOutputModel> usersList = this.userService.getAllUsers();
         return new ResponseEntity<>(usersList, HttpStatus.OK);
     }
+
+
 }

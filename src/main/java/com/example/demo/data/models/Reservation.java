@@ -17,13 +17,13 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 public class Reservation extends BaseEntity {
-    @Column
+    @Column(nullable = false)
     private Date checkInDate;
 
-    @Column
+    @Column(nullable = false)
     private Date checkoutDate;
 
-    @Column
+    @Column(nullable = false)
     private Integer peopleCount;
 
     @ManyToOne

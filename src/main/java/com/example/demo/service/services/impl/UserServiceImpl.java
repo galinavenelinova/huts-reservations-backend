@@ -10,10 +10,12 @@ import com.example.demo.web.models.UserDetailsModel;
 import com.example.demo.web.models.UserInputModel;
 import com.example.demo.web.models.UserOutputModel;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,7 +60,7 @@ public class UserServiceImpl implements UserService {
             user.setAuthorities(new ArrayList<>(this.roleService.findAllRoles()));
         } else {
             List<Role> roles = new ArrayList<>();
-            roles.add(this.roleService.finByAuthority("USER"));
+            roles.add(this.roleService.findByAuthority("USER"));
             user.setAuthorities(roles);
         }
 
@@ -67,7 +69,7 @@ public class UserServiceImpl implements UserService {
                 userServiceModel.getTel() != null) {
             if (userServiceModel.getPassword().length() >= 5 && userServiceModel.getUsername().length() >= 5) {
                 user.setPassword(this.bCryptPasswordEncoder.encode(userServiceModel.getPassword()));
-                user = this.userRepository.saveAndFlush(user);
+                this.userRepository.saveAndFlush(user);
             } else {
                 throw new InvalidUserException("Invalid length of password or username!");
             }
@@ -81,19 +83,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetailsModel getUserDetails(String username) {
         User user = this.userRepository.findByUsername(username).orElse(null);
-        return this.modelMapper.map(user, UserDetailsModel.class);
+        if (user != null) {
+            return this.modelMapper.map(user, UserDetailsModel.class);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public UserDetailsModel updateUserDetails(String username, UserInputModel userModel) {
         User user = this.userRepository.findByUsername(username).orElse(null);
-        assert user != null;
-        user.setUsername(userModel.getUsername());
-        user.setEmail(userModel.getEmail());
-        user.setNames(userModel.getNames());
-        user.setTel(userModel.getTel());
-        User userOutput = this.userRepository.save(user);
-        return this.modelMapper.map(userOutput, UserDetailsModel.class);
+        if (user != null) {
+            user.setUsername(userModel.getUsername());
+            user.setEmail(userModel.getEmail());
+            user.setNames(userModel.getNames());
+            user.setTel(userModel.getTel());
+            User userOutput = this.userRepository.save(user);
+            return this.modelMapper.map(userOutput, UserDetailsModel.class);
+        } else {
+            return null;
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.demo.data.models;
 
 import com.example.demo.data.models.base.BaseEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.util.*;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     @Length(min = 5)

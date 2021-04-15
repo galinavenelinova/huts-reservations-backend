@@ -15,6 +15,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "roles")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role extends BaseEntity implements GrantedAuthority {

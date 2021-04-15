@@ -9,7 +9,9 @@ import java.util.Set;
 public interface RoleService {
     void seedRolesInDB();
 
-    Role finByAuthority(String role);
+    Role findByAuthority(String role);
 
     List<Role> findAllRoles();
+
+    void makeUserAdmin(String username);
 }

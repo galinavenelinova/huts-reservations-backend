@@ -57,13 +57,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutSuccessHandler(new LogoutSuccessHandler() {
                     @Override
-                    public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
-//                        String username = principal.getName();
-                        System.out.println("The user " + "testuser" + " has logged out.");
+                    public void onLogoutSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) {
                         httpServletResponse.setStatus(200);
                     }
                 })
-                .permitAll();;
+                .permitAll();
+        ;
     }
 
     @Bean

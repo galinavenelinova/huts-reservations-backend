@@ -52,7 +52,7 @@ public class ReservationServiceImpl implements ReservationService {
                 for (var reservation : reservations) {
                     Date reservationCheckinDate = reservation.getCheckInDate();
                     Date reservationCheckoutDate = reservation.getCheckoutDate();
-                    if (current.getTime().after(reservationCheckinDate) && current.getTime().before(reservationCheckoutDate)){
+                    if ((current.getTime().equals(reservationCheckinDate) || current.getTime().after(reservationCheckinDate)) && current.getTime().before(reservationCheckoutDate)){
                         bookedBedsForDate += reservation.getPeopleCount();
                     }
                 }
@@ -71,11 +71,19 @@ public class ReservationServiceImpl implements ReservationService {
     public Boolean saveReservation(String hutId, ReservationModel reservationModel) {
         Reservation reservation = this.modelmapper.map(reservationModel, Reservation.class);
         Hut hut = this.hutRepository.findById(hutId).orElse(null);
-        User user = this.userRepository.findById(reservationModel.getUser().getId()).orElse(null);
-        reservation.setHut(hut);
-        reservation.setUser(user);
-        Reservation reservationOutput = this.reservationRepository.save(reservation);
-        return !reservationOutput.getId().isEmpty();
+        if (hut != null && reservationModel.getUser() != null) {
+            User user = this.userRepository.findById(reservationModel.getUser().getId()).orElse(null);
+            if (user != null) {
+                reservation.setHut(hut);
+                reservation.setUser(user);
+                Reservation reservationOutput = this.reservationRepository.save(reservation);
+                return !reservationOutput.getId().isEmpty();
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -83,5 +91,16 @@ public class ReservationServiceImpl implements ReservationService {
         User user = this.userRepository.findById(userId).orElse(null);
         List<Reservation> reservations = this.reservationRepository.findByUser(user);
         return reservations.stream().map(r -> this.modelmapper.map(r, ReservationListModel.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean deleteReservation(String reservationId) {
+        Reservation reservation = this.reservationRepository.findById(reservationId).orElse(null);
+        if (reservation != null) {
+            this.reservationRepository.delete(reservation);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

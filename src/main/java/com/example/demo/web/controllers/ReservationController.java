@@ -39,4 +39,10 @@ public class ReservationController {
         List<ReservationListModel> reservationListModels = this.reservationService.getReservationsForUser(userId);
         return new ResponseEntity<>(reservationListModels, HttpStatus.OK);
     }
+
+    @PostMapping("/reservation/delete")
+    public ResponseEntity<Boolean> deleteReservation(@RequestBody String reservationId) {
+        boolean isDeleted = this.reservationService.deleteReservation(reservationId);
+        return new ResponseEntity<>(isDeleted, HttpStatus.OK);
+    }
 }
