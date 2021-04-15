@@ -10,7 +10,9 @@ public interface ReservationService {
 
     Boolean saveReservation(String hutId, ReservationModel reservationModel);
 
-    List<ReservationListModel> getReservationsForUser(String userId);
+    List<ReservationListModel> getNotOutdatedReservationsForUser(String userId);
 
     boolean deleteReservation(String reservationId);
+
+    List<ReservationListModel> getOutdatedReservationsForUser(String userId);
 }

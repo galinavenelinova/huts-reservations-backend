@@ -12,9 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class ReservationListModel {
     private String id;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private Date checkinDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private Date checkoutDate;
     private Integer peopleCount;
     private String hutName;

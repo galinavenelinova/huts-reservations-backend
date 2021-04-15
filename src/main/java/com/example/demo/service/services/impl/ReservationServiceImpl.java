@@ -17,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -87,10 +88,23 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationListModel> getReservationsForUser(String userId) {
+    public List<ReservationListModel> getNotOutdatedReservationsForUser(String userId) {
         User user = this.userRepository.findById(userId).orElse(null);
         List<Reservation> reservations = this.reservationRepository.findByUser(user);
-        return reservations.stream().map(r -> this.modelmapper.map(r, ReservationListModel.class)).collect(Collectors.toList());
+        return reservations.stream()
+                .filter(r -> !r.getCheckoutDate().before(new Date()))
+                .map(r -> this.modelmapper.map(r, ReservationListModel.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReservationListModel> getOutdatedReservationsForUser(String userId) {
+        User user = this.userRepository.findById(userId).orElse(null);
+        List<Reservation> reservations = this.reservationRepository.findByUser(user);
+        return reservations.stream()
+                .filter(r -> (r.getCheckoutDate().before(new Date())))
+                .map(r -> this.modelmapper.map(r, ReservationListModel.class))
+                .collect(Collectors.toList());
     }
 
     @Override

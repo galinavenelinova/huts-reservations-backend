@@ -10,7 +10,6 @@ import com.example.demo.service.services.ReservationService;
 import com.example.demo.web.models.ReservationCheckModel;
 import com.example.demo.web.models.ReservationModel;
 import com.example.demo.web.models.UserDetailsModel;
-import com.example.demo.web.models.UserInputModel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -165,7 +164,7 @@ class ReservationServiceImplTest {
     void getReservationsForUser_whenUserIdDoNotExist_shouldReturnEmptyList() {
         //userRepository.findById() returns null as MockBean
         //reservationRepository.findByUser() returns null as MockBean
-        assertEquals(new ArrayList<>(), reservationService.getReservationsForUser("1"));
+        assertEquals(new ArrayList<>(), reservationService.getNotOutdatedReservationsForUser("1"));
     }
 
     @Test

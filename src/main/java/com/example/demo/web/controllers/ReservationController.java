@@ -35,8 +35,14 @@ public class ReservationController {
     }
 
     @GetMapping("/reservation/{userId}")
-    public ResponseEntity<List<ReservationListModel>> getReservationsForUser(@PathVariable String userId) {
-        List<ReservationListModel> reservationListModels = this.reservationService.getReservationsForUser(userId);
+    public ResponseEntity<List<ReservationListModel>> getNotOutdatedReservationsForUser(@PathVariable String userId) {
+        List<ReservationListModel> reservationListModels = this.reservationService.getNotOutdatedReservationsForUser(userId);
+        return new ResponseEntity<>(reservationListModels, HttpStatus.OK);
+    }
+
+    @GetMapping("/reservation-outdated/{userId}")
+    public ResponseEntity<List<ReservationListModel>> getOutdatedReservationsForUser(@PathVariable String userId) {
+        List<ReservationListModel> reservationListModels = this.reservationService.getOutdatedReservationsForUser(userId);
         return new ResponseEntity<>(reservationListModels, HttpStatus.OK);
     }
 
