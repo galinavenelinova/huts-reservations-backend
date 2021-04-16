@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Hut extends BaseEntity {
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Column

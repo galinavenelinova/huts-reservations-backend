@@ -6,6 +6,7 @@ import com.example.demo.data.models.User;
 import com.example.demo.data.repositories.HutRepository;
 import com.example.demo.data.repositories.ReservationRepository;
 import com.example.demo.data.repositories.UserRepository;
+import com.example.demo.helpers.DateService;
 import com.example.demo.service.services.ReservationService;
 import com.example.demo.web.models.ReservationCheckModel;
 import com.example.demo.web.models.ReservationModel;
@@ -37,6 +38,9 @@ class ReservationServiceImplTest {
 
     @MockBean
     UserRepository userRepository;
+
+    @MockBean
+    DateService dateService;
 
     @Autowired
     ReservationService reservationService;
@@ -161,14 +165,50 @@ class ReservationServiceImplTest {
     }
 
     @Test
-    void getReservationsForUser_whenUserIdDoNotExist_shouldReturnEmptyList() {
+    void getNotOutdatedReservationsForUser_whenUserIdDoNotExist_shouldReturnEmptyList() {
         //userRepository.findById() returns null as MockBean
         //reservationRepository.findByUser() returns null as MockBean
         assertEquals(new ArrayList<>(), reservationService.getNotOutdatedReservationsForUser("1"));
     }
 
     @Test
-    void getReservationsForUser_whenUserIdExistsAndUserHasReservations_shouldReturnListWithReservations() {
+    void getNotOutdatedReservationsForUser_whenUserIdExistsAndUserHasReservations_shouldReturnListWithCurrentReservations() throws ParseException {
+        Reservation reservation1 = new Reservation(new SimpleDateFormat("dd/MM/yyyy").parse("20/04/2021"), new SimpleDateFormat("dd/MM/yyyy").parse("22/04/2021"), 5, null, null);
+        Reservation reservation2 = new Reservation(new SimpleDateFormat("dd/MM/yyyy").parse("20/04/2021"), new SimpleDateFormat("dd/MM/yyyy").parse("24/04/2021"), 5, null, null);
+        Reservation reservation3 = new Reservation(new SimpleDateFormat("dd/MM/yyyy").parse("20/04/2021"), new SimpleDateFormat("dd/MM/yyyy").parse("26/04/2021"), 5, null, null);
+        List<Reservation> reservations = new ArrayList<>();
+        reservations.add(reservation1);
+        reservations.add(reservation2);
+        reservations.add(reservation3);
+        User user = new User();
+        Mockito.when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        Mockito.when(reservationRepository.findByUser(user)).thenReturn(reservations);
+        Mockito.when(dateService.getCurrentDate()).thenReturn(new SimpleDateFormat("dd/MM/yyyy").parse("24/04/2021"));
 
+        assertEquals(2, reservationService.getNotOutdatedReservationsForUser("1").size());
+    }
+
+    @Test
+    void getOutdatedReservationsForUser_whenUserIdDoNotExist_shouldReturnEmptyList() {
+        //userRepository.findById() returns null as MockBean
+        //reservationRepository.findByUser() returns null as MockBean
+        assertEquals(new ArrayList<>(), reservationService.getOutdatedReservationsForUser("1"));
+    }
+
+    @Test
+    void getOutdatedReservationsForUser_whenUserIdExistsAndUserHasReservations_shouldReturnListWithOldReservations() throws ParseException {
+        Reservation reservation1 = new Reservation(new SimpleDateFormat("dd/MM/yyyy").parse("20/04/2021"), new SimpleDateFormat("dd/MM/yyyy").parse("22/04/2021"), 5, null, null);
+        Reservation reservation2 = new Reservation(new SimpleDateFormat("dd/MM/yyyy").parse("20/04/2021"), new SimpleDateFormat("dd/MM/yyyy").parse("24/04/2021"), 5, null, null);
+        Reservation reservation3 = new Reservation(new SimpleDateFormat("dd/MM/yyyy").parse("20/04/2021"), new SimpleDateFormat("dd/MM/yyyy").parse("26/04/2021"), 5, null, null);
+        List<Reservation> reservations = new ArrayList<>();
+        reservations.add(reservation1);
+        reservations.add(reservation2);
+        reservations.add(reservation3);
+        User user = new User();
+        Mockito.when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        Mockito.when(reservationRepository.findByUser(user)).thenReturn(reservations);
+        Mockito.when(dateService.getCurrentDate()).thenReturn(new SimpleDateFormat("dd/MM/yyyy").parse("24/04/2021"));
+
+        assertEquals(1, reservationService.getOutdatedReservationsForUser("1").size());
     }
 }

@@ -1,4 +1,4 @@
-package com.example.demo.service.models;
+package com.example.demo.web.models;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,11 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class HutServiceModel {
-    private String id;
+public class HutInputModel {
     private String name;
     private String shortInfo;
     private String longInfo;
-    private String bedCapacity;
-    private MountainServiceModel mountain;
+    private Integer bedCapacity;
+    private MountainInputModel mountain;
 }

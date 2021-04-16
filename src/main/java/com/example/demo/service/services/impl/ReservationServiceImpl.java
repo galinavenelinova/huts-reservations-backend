@@ -6,6 +6,7 @@ import com.example.demo.data.models.User;
 import com.example.demo.data.repositories.HutRepository;
 import com.example.demo.data.repositories.ReservationRepository;
 import com.example.demo.data.repositories.UserRepository;
+import com.example.demo.helpers.DateService;
 import com.example.demo.service.models.ReservationServiceModel;
 import com.example.demo.service.services.ReservationService;
 import com.example.demo.web.models.ReservationCheckModel;
@@ -17,7 +18,6 @@ import org.modelmapper.ModelMapper;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -27,12 +27,14 @@ public class ReservationServiceImpl implements ReservationService {
     private final HutRepository hutRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelmapper;
+    private final DateService dateService;
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository, HutRepository hutRepository, UserRepository userRepository, ModelMapper modelmapper) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, HutRepository hutRepository, UserRepository userRepository, ModelMapper modelmapper, DateService dateService) {
         this.reservationRepository = reservationRepository;
         this.hutRepository = hutRepository;
         this.userRepository = userRepository;
         this.modelmapper = modelmapper;
+        this.dateService = dateService;
     }
 
     @Override
@@ -92,7 +94,7 @@ public class ReservationServiceImpl implements ReservationService {
         User user = this.userRepository.findById(userId).orElse(null);
         List<Reservation> reservations = this.reservationRepository.findByUser(user);
         return reservations.stream()
-                .filter(r -> !r.getCheckoutDate().before(new Date()))
+                .filter(r -> !r.getCheckoutDate().before(dateService.getCurrentDate()))
                 .map(r -> this.modelmapper.map(r, ReservationListModel.class))
                 .collect(Collectors.toList());
     }
@@ -102,7 +104,7 @@ public class ReservationServiceImpl implements ReservationService {
         User user = this.userRepository.findById(userId).orElse(null);
         List<Reservation> reservations = this.reservationRepository.findByUser(user);
         return reservations.stream()
-                .filter(r -> (r.getCheckoutDate().before(new Date())))
+                .filter(r -> (r.getCheckoutDate().before(dateService.getCurrentDate())))
                 .map(r -> this.modelmapper.map(r, ReservationListModel.class))
                 .collect(Collectors.toList());
     }

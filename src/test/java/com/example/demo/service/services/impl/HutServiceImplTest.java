@@ -3,6 +3,7 @@ package com.example.demo.service.services.impl;
 import com.example.demo.data.models.Hut;
 import com.example.demo.data.models.Mountain;
 import com.example.demo.data.repositories.HutRepository;
+import com.example.demo.data.repositories.MountainRepository;
 import com.example.demo.service.services.HutService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class HutServiceImplTest {
     ModelMapper modelMapper = new ModelMapper();
     HutRepository hutRepository = Mockito.mock(HutRepository.class);
-    HutService hutService = new HutServiceImpl(hutRepository, modelMapper);
+    MountainRepository mountainRepository = Mockito.mock(MountainRepository.class);
+    HutService hutService = new HutServiceImpl(hutRepository, mountainRepository, modelMapper);
 
     @Test
     void getHutsForMountain_whenNoHutsForMountain_shouldReturnEmptyList() {

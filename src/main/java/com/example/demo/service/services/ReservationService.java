@@ -3,6 +3,8 @@ package com.example.demo.service.services;
 import com.example.demo.web.models.ReservationCheckModel;
 import com.example.demo.web.models.ReservationListModel;
 import com.example.demo.web.models.ReservationModel;
+
+import java.util.Date;
 import java.util.List;
 
 public interface ReservationService {
